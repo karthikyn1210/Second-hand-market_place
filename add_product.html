@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Add Product</h3>
+<form method="post" enctype="multipart/form-data">
+  <div class="mb-2">
+    <label>Title</label>
+    <input class="form-control" name="title" required>
+  </div>
+  <div class="mb-2">
+    <label>Category</label>
+    <select class="form-select" name="category" required>
+      {% for c in categories %}
+      <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-2">
+    <label>Price (INR)</label>
+    <input class="form-control" name="price" type="number" step="0.01">
+  </div>
+  <div class="mb-2">
+    <label>Description</label>
+    <textarea class="form-control" name="description" rows="4"></textarea>
+  </div>
+  <div class="mb-2">
+    <label>Image (optional)</label>
+    <input class="form-control" name="image" type="file" accept="image/*">
+  </div>
+  <button class="btn btn-success">Post Item</button>
+</form>
+{% endblock %}

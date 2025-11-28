@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Edit Product</h3>
+<form method="post" enctype="multipart/form-data">
+  <div class="mb-2">
+    <label>Title</label>
+    <input class="form-control" name="title" value="{{ product.title }}" required>
+  </div>
+  <div class="mb-2">
+    <label>Category</label>
+    <select class="form-select" name="category" required>
+      {% for c in categories %}
+      <option value="{{ c }}" {% if c == product.category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-2">
+    <label>Price (INR)</label>
+    <input class="form-control" name="price" value="{{ product.price }}" type="number" step="0.01">
+  </div>
+  <div class="mb-2">
+    <label>Description</label>
+    <textarea class="form-control" name="description" rows="4">{{ product.description }}</textarea>
+  </div>
+  <div class="mb-2">
+    <label>Current Image</label><br>
+    {% if product.image_path %}
+      <img src="{{ url_for('uploaded_file', filename=product.image_path.split('/')[-1]) }}" style="max-width:200px;">
+    {% else %}
+      <div class="placeholder-img">No Image</div>
+    {% endif %}
+  </div>
+  <div class="mb-2">
+    <label>Replace Image</label>
+    <input class="form-control" name="image" type="file" accept="image/*">
+  </div>
+  <button class="btn btn-primary">Update</button>
+</form>
+{% endblock %}

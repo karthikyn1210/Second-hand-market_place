@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-2">🎉 Special Offers & Deals</h1>
+    <p class="lead">Save big on amazing second-hand products!</p>
+  </div>
+</div>
+
+<div class="container mt-5">
+  
+  <!-- Filter Tags -->
+  <div class="mb-4 d-flex flex-wrap gap-2">
+    <span class="badge bg-warning text-dark p-2">💰 Budget Deals (Under ₹200)</span>
+    <span class="badge bg-danger p-2">🔥 Hot Deals</span>
+    <span class="badge bg-success p-2">✓ Best Sellers</span>
+    <span class="badge bg-info p-2">⭐ Top Rated</span>
+  </div>
+
+  {% if deals %}
+    <div class="row g-4">
+      {% for deal in deals %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-lg border-0 h-100 product-card" style="transition: transform 0.3s;">
+          <div class="position-relative">
+            <img src="/{{ deal.image_path | default('https://via.placeholder.com/300') }}" class="card-img-top" style="height:250px; object-fit:cover;">
+            
+            <!-- Deal Badge -->
+            {% if deal.price < 200 %}
+              <span class="position-absolute top-0 start-0 badge bg-danger m-2">
+                💰 BUDGET DEAL
+              </span>
+            {% elif deal.price > 500 %}
+              <span class="position-absolute top-0 start-0 badge bg-warning text-dark m-2">
+                ⭐ PREMIUM
+              </span>
+            {% endif %}
+            
+            <!-- Discount Tag -->
+            <span class="position-absolute top-0 end-0 badge bg-success m-2">
+              🎁 OFFER
+            </span>
+          </div>
+
+          <div class="card-body">
+            <h6 class="card-title fw-bold text-truncate" style="color: #667eea;">
+              {{ deal.title }}
+            </h6>
+            <p class="card-text small text-muted mb-2">
+              <strong>Category:</strong> {{ deal.category }}
+            </p>
+            <p class="card-text small text-muted mb-2">
+              <strong>Seller:</strong> {{ deal.seller | default('Admin') }}
+            </p>
+            
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="fs-4 fw-bold text-success">₹{{ "%.2f"|format(deal.price) }}</span>
+            </div>
+
+            <p class="card-text small">{{ deal.description[:60] }}...</p>
+
+            <div class="d-grid gap-2">
+              <a href="{{ url_for('product_detail', pid=deal.id) }}" class="btn btn-sm btn-primary">
+                👁️ View Details
+              </a>
+              <form method="POST" action="{{ url_for('add_to_cart', pid=deal.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-success w-100">
+                  🛒 Add to Cart
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5">
+      <h3>No deals available at the moment</h3>
+      <a href="{{ url_for('listings') }}" class="btn btn-primary mt-3">Browse All Products</a>
+    </div>
+  {% endif %}
+
+</div>
+
+<style>
+  .product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3) !important;
+  }
+  
+  .product-card {
+    border-radius: 12px;
+  }
+</style>
+{% endblock %}

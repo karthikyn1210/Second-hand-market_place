@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .add-todo-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-card h1 {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .image-preview {
+        margin-top: 15px;
+        max-width: 200px;
+    }
+
+    .image-preview img {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-upload-hint {
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 5px;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-cancel {
+        background: #e0e0e0;
+        color: #333;
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+    }
+
+    .info-box {
+        background: #e7f3ff;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+        color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="add-todo-container">
+    <div class="container">
+        <div class="form-card">
+            <h1>✏️ Add New Todo</h1>
+
+            <div class="info-box">
+                📌 Create a todo for bikes or cars you're interested in. Upload an image to avoid duplicates!
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="item_type">Item Type *</label>
+                    <select name="item_type" id="item_type" required>
+                        <option value="">Select Type...</option>
+                        <option value="Car">🚗 Car</option>
+                        <option value="Bike">🏍️ Bike</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title / Name *</label>
+                    <input type="text" name="title" id="title" placeholder="e.g., 2022 Maruti Swift, Royal Enfield" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" name="category" id="category" placeholder="e.g., Sedan, Hatchback, Cruiser">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price (₹)</label>
+                        <input type="number" name="price" id="price" placeholder="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" placeholder="Add details about the bike/car..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Image Upload (Avoid Duplicates!)</label>
+                    <input type="file" name="image" id="image" accept="image/*">
+                    <div class="image-upload-hint">
+                        ✓ Upload a unique image to identify this item<br>
+                        ✓ Supported formats: JPG, PNG, GIF, WEBP<br>
+                        ✓ Max file size: 5MB
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-submit">➕ Create Todo</button>
+                    <a href="{{ url_for('todos_list') }}" class="btn btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Image preview
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const preview = document.getElementById('imagePreview');
+                preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

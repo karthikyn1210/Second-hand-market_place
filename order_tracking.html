@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Order Tracking - MarketHub{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem 2rem; margin-bottom: 2rem; border-radius: 12px;">
+  <div class="container">
+    <h1 style="font-weight: 800; margin: 0; font-size: 2.2rem;">📦 Track Your Order</h1>
+    <p style="margin-top: 0.5rem; opacity: 0.9;">Real-time tracking and delivery updates</p>
+  </div>
+</div>
+
+<div class="container">
+  {% if order %}
+    <div class="row">
+      <!-- Order Status Tracker -->
+      <div class="col-lg-8">
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+          <h3 style="font-weight: 700; margin-bottom: 1.5rem;">📍 Order Status: <span style="color: #667eea;">{{ order.tracking_status }}</span></h3>
+          
+          <!-- Status Timeline -->
+          <div style="position: relative; padding: 2rem 0;">
+            <!-- Timeline Line -->
+            <div style="position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: #e0e0e0;"></div>
+            
+            <!-- Status Steps -->
+            <div style="display: grid; gap: 2rem; position: relative;">
+              <!-- Order Confirmed -->
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <div style="width: 50px; height: 50px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; z-index: 10; position: relative;">✓</div>
+                <div>
+                  <h5 style="margin: 0; font-weight: 700; color: #333;">Order Confirmed</h5>
+                  <p style="margin: 0.5rem 0 0 0; color: #999;">{{ order.created_on }}</p>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">Order #{{ order.order_number }} confirmed and payment verified</p>
+                </div>
+              </div>
+
+              <!-- Processing -->
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <div style="width: 50px; height: 50px; background: #ffc107; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.5rem; z-index: 10; position: relative;">📦</div>
+                <div>
+                  <h5 style="margin: 0; font-weight: 700; color: #333;">Processing</h5>
+                  <p style="margin: 0.5rem 0 0 0; color: #999;">In Progress</p>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">Items are being packed and prepared for shipment</p>
+                </div>
+              </div>
+
+              <!-- Shipped -->
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <div style="width: 50px; height: 50px; background: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #999; font-weight: 700; font-size: 1.5rem; z-index: 10; position: relative;">🚚</div>
+                <div>
+                  <h5 style="margin: 0; font-weight: 700; color: #333;">On the Way</h5>
+                  <p style="margin: 0.5rem 0 0 0; color: #999;">Pending</p>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">Your package is with the courier and on its way</p>
+                </div>
+              </div>
+
+              <!-- Delivered -->
+              <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <div style="width: 50px; height: 50px; background: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #999; font-weight: 700; font-size: 1.5rem; z-index: 10; position: relative;">🏠</div>
+                <div>
+                  <h5 style="margin: 0; font-weight: 700; color: #333;">Delivered</h5>
+                  <p style="margin: 0.5rem 0 0 0; color: #999;">Pending</p>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">Estimated on {{ order.estimated_delivery }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+          <h3 style="font-weight: 700; margin-bottom: 1.5rem;">📦 Order Items</h3>
+          
+          {% for item in order.items %}
+            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 1rem; align-items: center;">
+              <div>
+                <h5 style="margin: 0; font-weight: 600; color: #333;">{{ item.product_title }}</h5>
+                <p style="margin: 0.5rem 0 0 0; color: #999; font-size: 0.9em;">Product ID: {{ item.product_id }}</p>
+              </div>
+              <div style="text-align: right;">
+                <p style="margin: 0; color: #666;">Qty: <strong>{{ item.quantity }}</strong></p>
+              </div>
+              <div style="text-align: right;">
+                <p style="margin: 0; color: #667eea; font-weight: 700; font-size: 1.1rem;">₹{{ "%.0f"|format(item.price) }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Tracking History -->
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <h3 style="font-weight: 700; margin-bottom: 1.5rem;">📋 Tracking History</h3>
+          
+          {% if tracking_history %}
+            <div style="display: grid; gap: 1rem;">
+              {% for record in tracking_history %}
+                <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h5 style="margin: 0; font-weight: 600; color: #333;">{{ record.status }}</h5>
+                    <small style="color: #999;">{{ record.timestamp }}</small>
+                  </div>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">📍 {{ record.location }}</p>
+                  <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.9em;">{{ record.details }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div style="background: #f0f8ff; padding: 1.5rem; border-radius: 8px; text-align: center;">
+              <p style="margin: 0; color: #0066cc; font-weight: 600;">📍 Tracking updates will appear here once your order ships</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="col-lg-4">
+        <div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 20px;">
+          <h4 style="font-weight: 700; margin-bottom: 1.5rem; color: #333;">📋 Order Details</h4>
+
+          <div style="display: grid; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 2px solid #f0f0f0;">
+            <div>
+              <p style="margin: 0; color: #999; font-size: 0.9em; font-weight: 600; text-transform: uppercase;">Order Number</p>
+              <p style="margin: 0.5rem 0 0 0; font-weight: 700; color: #333; font-size: 1.1rem;">{{ order.order_number }}</p>
+            </div>
+            <div>
+              <p style="margin: 0; color: #999; font-size: 0.9em; font-weight: 600; text-transform: uppercase;">Tracking ID</p>
+              <p style="margin: 0.5rem 0 0 0; font-weight: 700; color: #667eea; font-size: 1.1rem;">{{ order.tracking_id }}</p>
+            </div>
+            <div>
+              <p style="margin: 0; color: #999; font-size: 0.9em; font-weight: 600; text-transform: uppercase;">Payment Status</p>
+              {% if order.payment_status == 'Completed' %}
+              <p style="margin: 0.5rem 0 0 0; font-weight: 700; color: #28a745;">{{ order.payment_status }}</p>
+              {% else %}
+              <p style="margin: 0.5rem 0 0 0; font-weight: 700; color: #ffc107;">{{ order.payment_status }}</p>
+              {% endif %}
+            </div>
+            <div>
+              <p style="margin: 0; color: #999; font-size: 0.9em; font-weight: 600; text-transform: uppercase;">Estimated Delivery</p>
+              <p style="margin: 0.5rem 0 0 0; font-weight: 700; color: #333;">{{ order.estimated_delivery }}</p>
+            </div>
+          </div>
+
+          <div style="display: grid; gap: 1rem; margin-top: 1.5rem;">
+            <div>
+              <p style="margin: 0; color: #999; font-size: 0.9em; font-weight: 600;">Shipping Address</p>
+              <div style="margin: 0.5rem 0 0 0; padding: 1rem; background: #f8f9fa; border-radius: 8px; color: #666; font-size: 0.9em; line-height: 1.5;">
+                {{ order.shipping_address }}<br>
+                📞 {{ order.phone_number }}
+              </div>
+            </div>
+
+            <div style="padding-top: 1rem; border-top: 2px solid #f0f0f0;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                <span style="color: #666;">Subtotal</span>
+                <span style="font-weight: 600; color: #333;">₹{{ "%.0f"|format(order.total_price * 0.9) }}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                <span style="color: #666;">Discount (10%)</span>
+                <span style="font-weight: 600; color: #28a745;">-₹{{ "%.0f"|format(order.total_price * 0.1) }}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 1px solid #f0f0f0;">
+                <span style="font-weight: 700; color: #333;">Total</span>
+                <span style="font-weight: 800; color: #667eea; font-size: 1.2rem;">₹{{ "%.0f"|format(order.total_price) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="{{ url_for('listings') }}" class="btn" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.8rem; font-weight: 600; border: none; border-radius: 8px; margin-top: 1.5rem; text-decoration: none; text-align: center;">
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="background: white; border-radius: 12px; padding: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+      <h3 style="color: #999; margin-bottom: 1rem;">❌ Order Not Found</h3>
+      <p style="color: #999; margin-bottom: 2rem;">The order you're looking for doesn't exist or has expired.</p>
+      <a href="{{ url_for('listings') }}" class="btn" style="background: #667eea; color: white; padding: 0.8rem 2rem; border: none; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        Back to Listings
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
