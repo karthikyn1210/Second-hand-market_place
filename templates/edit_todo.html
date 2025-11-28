@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .edit-todo-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-card h1 {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .image-section {
+        background: #f8f8f8;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+
+    .current-image {
+        max-width: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+    }
+
+    .image-preview {
+        margin-top: 15px;
+        max-width: 200px;
+    }
+
+    .image-preview img {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-upload-hint {
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 5px;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-cancel {
+        background: #e0e0e0;
+        color: #333;
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+    }
+
+    .status-info {
+        background: #e7f3ff;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+        color: #0056b3;
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="edit-todo-container">
+    <div class="container">
+        <div class="form-card">
+            <h1>✏️ Edit Todo</h1>
+
+            <div class="status-info">
+                📌 Update the details of your todo. Current status: <strong>{{ todo.status|upper }}</strong>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Title / Name *</label>
+                    <input type="text" name="title" id="title" value="{{ todo.title }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" name="category" id="category" value="{{ todo.category or '' }}" placeholder="e.g., Sedan, Hatchback, Cruiser">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price (₹)</label>
+                        <input type="number" name="price" id="price" value="{{ todo.price or '0' }}" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" placeholder="Add details...">{{ todo.description or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status">
+                        <option value="pending" {% if todo.status == 'pending' %}selected{% endif %}>⏳ Pending</option>
+                        <option value="in-progress" {% if todo.status == 'in-progress' %}selected{% endif %}>🔄 In Progress</option>
+                        <option value="completed" {% if todo.status == 'completed' %}selected{% endif %}>✓ Completed</option>
+                    </select>
+                </div>
+
+                <!-- Current Image Section -->
+                {% if todo.image_path %}
+                    <div class="image-section">
+                        <label>Current Image</label>
+                        <img src="/{{ todo.image_path }}" alt="{{ todo.title }}" class="current-image">
+                        <p style="font-size: 0.9rem; color: #666; margin: 0;">
+                            Upload a new image to replace this one
+                        </p>
+                    </div>
+                {% endif %}
+
+                <!-- New Image Upload -->
+                <div class="form-group">
+                    <label for="image">Upload New Image (Optional)</label>
+                    <input type="file" name="image" id="image" accept="image/*">
+                    <div class="image-upload-hint">
+                        ✓ Supported formats: JPG, PNG, GIF, WEBP<br>
+                        ✓ Leave empty to keep current image
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-submit">💾 Save Changes</button>
+                    <a href="{{ url_for('todos_list') }}" class="btn btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Image preview
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const preview = document.getElementById('imagePreview');
+                preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

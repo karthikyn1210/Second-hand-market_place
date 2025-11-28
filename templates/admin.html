@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Admin Panel</h3>
+
+<h5>Users</h5>
+<table class="table table-sm">
+  <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Admin</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.name }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ 'Yes' if u.is_admin==1 else 'No' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h5>All Products</h5>
+<table class="table table-sm">
+  <thead><tr><th>ID</th><th>Title</th><th>Seller</th><th>Category</th><th>Price</th></tr></thead>
+  <tbody>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td><a href="{{ url_for('product_detail', pid=p.id) }}">{{ p.title }}</a></td>
+      <td>{{ p.seller }}</td>
+      <td>{{ p.category }}</td>
+      <td>₹{{ '%.2f'|format(p.price) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

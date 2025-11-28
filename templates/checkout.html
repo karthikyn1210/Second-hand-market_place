@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3 class="text-white mb-0">🛒 Checkout</h3>
+        </div>
+        <div class="card-body">
+          
+          <!-- Order Summary -->
+          <h5 class="mb-3 text-primary">📦 Order Summary</h5>
+          <div class="table-responsive mb-4">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in cart_items %}
+                <tr class="align-middle">
+                  <td>
+                    <img src="{{ item.image_path | default('https://via.placeholder.com/50') }}" style="width:50px; height:50px; object-fit:cover; border-radius:5px;" class="me-2">
+                    <strong>{{ item.title }}</strong>
+                  </td>
+                  <td class="fw-bold text-success">₹{{ "%.2f"|format(item.price) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td>TOTAL:</td>
+                  <td class="text-success" style="font-size:1.2em;">₹{{ "%.2f"|format(total) }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Payment Form -->
+          <h5 class="mb-3 text-primary">💳 Payment Details</h5>
+          <form method="POST" novalidate>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Cardholder Name</label>
+              <input type="text" class="form-control form-control-lg" name="card_name" placeholder="John Doe" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Card Number</label>
+              <input type="text" class="form-control form-control-lg" name="card_number" placeholder="1234 5678 9012 3456" maxlength="16" pattern="[0-9]{16}" required>
+              <small class="text-muted">16 digits, no spaces</small>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Expiry Date</label>
+                  <input type="text" class="form-control form-control-lg" name="card_expiry" placeholder="MM/YY" maxlength="5" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">CVV</label>
+                  <input type="text" class="form-control form-control-lg" name="card_cvv" placeholder="123" maxlength="3" pattern="[0-9]{3}" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+              <span style="font-size:1.5em; margin-right:10px;">ℹ️</span>
+              <div>
+                <strong>Demo Payment:</strong> Use any valid 16-digit number (e.g., 1234567890123456)
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg fw-bold">
+                💰 Pay ₹{{ "%.2f"|format(total) }}
+              </button>
+              <a href="{{ url_for('cart') }}" class="btn btn-outline-secondary">← Back to Cart</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Breakdown Sidebar -->
+    <div class="col-md-4">
+      <div class="card shadow-lg border-0 sticky-top" style="top:20px;">
+        <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <h5 class="text-white mb-0">💵 Price Breakdown</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span class="fw-bold">₹{{ "%.2f"|format(total) }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Shipping:</span>
+            <span class="text-success fw-bold">FREE</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Tax (0%):</span>
+            <span class="fw-bold">₹0.00</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between" style="font-size:1.3em;">
+            <span class="fw-bold">Total:</span>
+            <span class="text-success fw-bold">₹{{ "%.2f"|format(total) }}</span>
+          </div>
+          <small class="text-muted d-block mt-3">✓ Secure payment</small>
+          <small class="text-muted d-block">✓ Money-back guarantee</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .form-control-lg:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+</style>
+{% endblock %}

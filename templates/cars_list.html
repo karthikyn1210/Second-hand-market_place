@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title %}Car Listings - MarketHub{% endblock %}
+
+{% block content %}
+<div class="cars-page">
+    <!-- Page Header with Search -->
+    <div class="cars-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; margin-bottom: 30px;">
+        <div class="container">
+            <h1 style="color: white; margin: 0 0 20px 0; font-size: 2.5rem; font-weight: 700; text-align: center;">🚗 Car Listings</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 0 0 20px 0; font-size: 1.1rem; text-align: center;">Find your perfect second-hand vehicle</p>
+            
+            <!-- Search Bar -->
+            <form method="GET" action="{{ url_for('cars') }}" style="max-width: 600px; margin: 0 auto;">
+                <div style="display: flex; gap: 10px; margin-bottom: 0;">
+                    <input type="text" name="search" placeholder="🔍 Search cars by brand, model, or features..." 
+                           class="form-control" value="{{ filters.search }}"
+                           style="border: none; border-radius: 25px; padding: 12px 20px; font-size: 1rem; flex: 1;">
+                    <button type="submit" class="btn" style="background: white; color: #667eea; border: none; border-radius: 25px; padding: 12px 30px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+                            onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'"
+                            onmouseout="this.style.boxShadow='none'">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Market Stats Section -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid #667eea;">
+                <p style="margin: 0; color: #999; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Total Cars</p>
+                <p id="stat-total" style="margin: 10px 0 0 0; font-size: 2rem; font-weight: 700; color: #667eea;">Loading...</p>
+            </div>
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid #28a745;">
+                <p style="margin: 0; color: #999; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Average Price</p>
+                <p id="stat-avg" style="margin: 10px 0 0 0; font-size: 1.8rem; font-weight: 700; color: #28a745;">Loading...</p>
+            </div>
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid #ffc107;">
+                <p style="margin: 0; color: #999; font-size: 0.9rem; font-weight: 600; text-transform: uppercase;">Price Range</p>
+                <p id="stat-range" style="margin: 10px 0 0 0; font-size: 1.2rem; font-weight: 700; color: #ffc107;">Loading...</p>
+            </div>
+        </div>
+
+        <div class="row" style="gap: 20px;">
+            <!-- Filter Sidebar -->
+            <aside class="col-lg-3" style="margin-bottom: 20px;">
+                <div class="filter-card" style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: sticky; top: 20px;">
+                    <h5 style="font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #667eea;">🔍 Filters</h5>
+                    
+                    <form method="GET" action="{{ url_for('cars') }}" id="filterForm" style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Car Brand -->
+                        <div class="filter-group">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333;">Car Brand</label>
+                            <input type="text" name="brand" placeholder="e.g., Maruti, Hyundai" class="form-control" value="{{ filters.brand }}" 
+                                   style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; transition: all 0.3s ease;">
+                        </div>
+
+                        <!-- Car Model -->
+                        <div class="filter-group">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333;">Car Model</label>
+                            <input type="text" name="model" placeholder="e.g., Swift, Creta" class="form-control" value="{{ filters.model }}" 
+                                   style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; transition: all 0.3s ease;">
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-group">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333;">💰 Price Range</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" name="price_min" placeholder="Min" class="form-control" value="{{ filters.price_min }}" 
+                                       style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px;">
+                                <input type="number" name="price_max" placeholder="Max" class="form-control" value="{{ filters.price_max }}" 
+                                       style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px;">
+                            </div>
+                        </div>
+
+                        <!-- Fuel Type -->
+                        <div class="filter-group">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333;">⛽ Fuel Type</label>
+                            <select name="fuel_type" class="form-control" style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px;">
+                                <option value="">All Types</option>
+                                <option value="Petrol" {% if filters.fuel_type == 'Petrol' %}selected{% endif %}>Petrol</option>
+                                <option value="Diesel" {% if filters.fuel_type == 'Diesel' %}selected{% endif %}>Diesel</option>
+                                <option value="Electric" {% if filters.fuel_type == 'Electric' %}selected{% endif %}>Electric</option>
+                                <option value="Hybrid" {% if filters.fuel_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                                <option value="LPG" {% if filters.fuel_type == 'LPG' %}selected{% endif %}>LPG</option>
+                            </select>
+                        </div>
+
+                        <!-- Year Range -->
+                        <div class="filter-group">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block; color: #333;">📅 Year of Manufacture</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" name="year_min" placeholder="From" class="form-control" value="{{ filters.year_min }}" min="2000" max="2024" 
+                                       style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px;">
+                                <input type="number" name="year_max" placeholder="To" class="form-control" value="{{ filters.year_max }}" min="2000" max="2024" 
+                                       style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 12px;">
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-weight: 600; border-radius: 8px; padding: 10px 0;">
+                                ✓ Apply Filters
+                            </button>
+                            <a href="{{ url_for('cars') }}" class="btn" style="background: #f0f0f0; color: #333; border: 2px solid #e0e0e0; font-weight: 600; border-radius: 8px; padding: 10px 0; text-decoration: none; text-align: center;">
+                                ↺ Reset
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Filter Summary -->
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f0f0f0;">
+                        <h6 style="font-weight: 600; margin-bottom: 12px; color: #667eea;">📊 Active Filters</h6>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            {% if filters.search %}
+                                <span class="badge" style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.85rem;">
+                                    Search: {{ filters.search }} ✕
+                                </span>
+                            {% endif %}
+                            {% if filters.brand %}
+                                <span class="badge" style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.85rem;">
+                                    Brand: {{ filters.brand }} ✕
+                                </span>
+                            {% endif %}
+                            {% if filters.model %}
+                                <span class="badge" style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.85rem;">
+                                    Model: {{ filters.model }} ✕
+                                </span>
+                            {% endif %}
+                            {% if filters.fuel_type %}
+                                <span class="badge" style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.85rem;">
+                                    Fuel: {{ filters.fuel_type }} ✕
+                                </span>
+                            {% endif %}
+                            {% if filters.price_min > 0 or filters.price_max < 999999 %}
+                                <span class="badge" style="background: #667eea; color: white; padding: 6px 10px; border-radius: 20px; font-size: 0.85rem;">
+                                    ₹{{ filters.price_min }} - ₹{{ filters.price_max }} ✕
+                                </span>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('cars') }}" style="display: inline-block; margin-top: 12px; color: #667eea; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+                            🔄 Clear All Filters
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Car Listings Grid -->
+            <main class="col-lg-9">
+                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0; font-weight: 600;">📋 Found <span style="color: #667eea; font-weight: 700;">{{ cars|length }}</span> cars</h4>
+                    <select id="sortBy" class="form-control" style="width: 200px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                        <option value="recent">Latest Listings</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- No Results -->
+                {% if cars|length == 0 %}
+                <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <h3 style="font-size: 1.8rem; margin-bottom: 10px; color: #999;">🚗 No cars found</h3>
+                    <p style="color: #999; font-size: 1.1rem; margin-bottom: 20px;">Try adjusting your filters or browse all listings</p>
+                    <a href="{{ url_for('cars') }}" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 25px; border-radius: 8px; text-decoration: none;">
+                        🔄 View All Cars
+                    </a>
+                </div>
+                {% else %}
+                <!-- Cars Grid -->
+                <div class="cars-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                    {% for car in cars %}
+                    <div class="car-card" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer; hover: transform translateY(-5px);"
+                         onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+                        
+                        <!-- Image Section -->
+                        <div style="position: relative; overflow: hidden; height: 200px; background: #f0f0f0;">
+                            <img src="{{ url_for('uploaded_file', filename=car.image_path.split('/')[-1]) }}" alt="{{ car.title }}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" 
+                                 onmouseover="this.style.transform='scale(1.05)'" 
+                                 onmouseout="this.style.transform='scale(1)'">
+                            <span class="badge" style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 20px; font-weight: 600;">
+                                NEW
+                            </span>
+                        </div>
+
+                        <!-- Info Section -->
+                        <div style="padding: 20px;">
+                            <!-- Title (Brand Model) -->
+                            <h5 style="margin: 0 0 10px 0; font-weight: 700; color: #333; font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ car.title }}
+                            </h5>
+
+                            <!-- Price -->
+                            <p style="margin: 10px 0; font-size: 1.4rem; font-weight: 700; color: #667eea;">
+                                ₹{{ "{:,}".format(car.price|int) }}
+                            </p>
+
+                            <!-- Details Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 15px 0; font-size: 0.9rem; color: #666;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span>📍</span>
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">City, Location</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span>📅</span>
+                                    <span>{{ car.created_on[:10] }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Description Preview -->
+                            <p style="color: #666; font-size: 0.9rem; margin: 10px 0; height: 40px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                {{ car.description[:80] }}...
+                            </p>
+
+                            <!-- Seller Info -->
+                            <div style="background: #f8f8f8; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; color: #666;">
+                                <span>👤 Seller: <strong>{{ car.seller or 'Unknown' }}</strong></span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px;">
+                                <a href="{{ url_for('car_detail', pid=car.id) }}" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 0; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600; border: none; cursor: pointer;">
+                                    👁️ View Details
+                                </a>
+                                <form method="POST" action="{{ url_for('add_to_cart', pid=car.id) }}" style="display: contents;">
+                                    <button type="submit" class="btn" style="background: white; color: #667eea; padding: 10px 0; border-radius: 8px; border: 2px solid #667eea; text-align: center; font-weight: 600; cursor: pointer; transition: all 0.3s ease;"
+                                            onmouseover="this.style.background='#667eea'; this.style.color='white'"
+                                            onmouseout="this.style.background='white'; this.style.color='#667eea'">
+                                        🛒 Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cars-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding-bottom: 40px;
+    }
+
+    .filter-card input:focus,
+    .filter-card select:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        outline: none;
+    }
+
+    .cars-grid {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .car-card {
+        position: relative;
+        border: 1px solid #e8e8e8;
+    }
+
+    .car-card:hover {
+        border-color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+        .row {
+            gap: 0 !important;
+        }
+
+        .col-lg-3 {
+            display: none;
+        }
+
+        .col-lg-9 {
+            max-width: 100% !important;
+        }
+
+        .cars-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<script>
+    // Load market statistics
+    fetch('/api/cars/stats')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('stat-total').textContent = data.total_cars || 0;
+            document.getElementById('stat-avg').textContent = '₹' + (data.avg_price || 0).toLocaleString('en-IN');
+            document.getElementById('stat-range').textContent = '₹' + (data.min_price || 0).toLocaleString('en-IN') + ' - ₹' + (data.max_price || 0).toLocaleString('en-IN');
+        })
+        .catch(e => console.log('Stats loading error:', e));
+
+    document.getElementById('sortBy').addEventListener('change', function() {
+        const sortValue = this.value;
+        const cards = Array.from(document.querySelectorAll('.car-card'));
+        
+        if (sortValue === 'price-low') {
+            cards.sort((a, b) => {
+                const priceA = parseInt(a.querySelector('p').textContent.replace(/[₹,]/g, ''));
+                const priceB = parseInt(b.querySelector('p').textContent.replace(/[₹,]/g, ''));
+                return priceA - priceB;
+            });
+        } else if (sortValue === 'price-high') {
+            cards.sort((a, b) => {
+                const priceA = parseInt(a.querySelector('p').textContent.replace(/[₹,]/g, ''));
+                const priceB = parseInt(b.querySelector('p').textContent.replace(/[₹,]/g, ''));
+                return priceB - priceA;
+            });
+        }
+        
+        const grid = document.querySelector('.cars-grid');
+        cards.forEach(card => grid.appendChild(card));
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}{{ car.title }} - Car Details{% endblock %}
+
+{% block content %}
+<div class="car-detail-page" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; padding: 30px 0;">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" style="margin-bottom: 20px;">
+            <ol class="breadcrumb" style="background: none; padding: 0;">
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}" style="color: #667eea; text-decoration: none;">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cars') }}" style="color: #667eea; text-decoration: none;">Cars</a></li>
+                <li class="breadcrumb-item active" aria-current="page" style="color: #666;">{{ car.title }}</li>
+            </ol>
+        </nav>
+
+        <div class="row" style="gap: 20px;">
+            <!-- Left Column: Images & Details -->
+            <div class="col-lg-7">
+                <!-- Main Image -->
+                <div class="image-section" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                    <img src="{{ url_for('uploaded_file', filename=car.image_path.split('/')[-1]) }}" alt="{{ car.title }}" 
+                         style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
+                    <div style="position: absolute; top: 20px; left: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 600;">
+                        ✓ VERIFIED SELLER
+                    </div>
+                </div>
+
+                <!-- Image Gallery (Placeholder for additional images) -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px;">
+                    <div style="background: white; border-radius: 8px; height: 100px; display: flex; align-items: center; justify-content: center; border: 2px solid #e0e0e0; cursor: pointer; transition: all 0.3s ease;"
+                         onmouseover="this.style.borderColor='#667eea'; this.style.boxShadow='0 2px 8px rgba(102,126,234,0.2)'"
+                         onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
+                        <span style="color: #999; font-size: 0.9rem;">📸 View More</span>
+                    </div>
+                    <div style="background: #f0f0f0; border-radius: 8px; height: 100px;"></div>
+                    <div style="background: #f0f0f0; border-radius: 8px; height: 100px;"></div>
+                    <div style="background: #f0f0f0; border-radius: 8px; height: 100px;"></div>
+                </div>
+
+                <!-- Car Specifications -->
+                <div class="specs-section" style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                    <h4 style="font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #667eea;">📋 Car Specifications</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.95rem;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                🚗
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">BRAND</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">{{ car.title.split()[0] }}</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                📅
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">YEAR</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">2022</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                ⛽
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">FUEL TYPE</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">Petrol</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                🛣️
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">MILEAGE</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">45,000 km</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                ⚙️
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">TRANSMISSION</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">Manual</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem;">
+                                🏎️
+                            </div>
+                            <div>
+                                <p style="margin: 0; color: #999; font-size: 0.85rem; font-weight: 500;">OWNER</p>
+                                <p style="margin: 0; font-weight: 600; color: #333;">1st Owner</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                    <h4 style="font-weight: 700; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid #667eea;">📝 About This Car</h4>
+                    <p style="color: #666; line-height: 1.6; margin: 0;">
+                        {{ car.description }}
+                    </p>
+                </div>
+
+                <!-- Reviews Section -->
+                <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.1);">
+                    <h4 style="font-weight: 700; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #667eea;">⭐ Reviews & Ratings</h4>
+                    
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div style="padding: 15px 0; border-bottom: 1px solid #e8e8e8;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <p style="margin: 0; font-weight: 600; color: #333;">{{ review.name or 'Anonymous' }}</p>
+                                    <p style="margin: 0; font-size: 0.85rem; color: #999;">{{ review.created_on[:10] }}</p>
+                                </div>
+                                <div style="color: #ffa500; font-size: 1.1rem;">
+                                    {% for i in range(5) %}
+                                        {% if i < review.rating %}⭐{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p style="color: #666; margin: 0; line-height: 1.5;">{{ review.comment }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="color: #999; text-align: center; padding: 20px 0;">No reviews yet. Be the first to review this car!</p>
+                    {% endif %}
+
+                    <!-- Add Review Form -->
+                    {% if session.get('user_id') %}
+                    <form method="POST" action="{{ url_for('product_detail', pid=car.id) }}" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e8e8e8;">
+                        <h5 style="font-weight: 600; margin-bottom: 15px;">📤 Add Your Review</h5>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Rating</label>
+                            <select name="rating" required style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Select a rating</option>
+                                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                <option value="4">⭐⭐⭐⭐ Good</option>
+                                <option value="3">⭐⭐⭐ Average</option>
+                                <option value="2">⭐⭐ Poor</option>
+                                <option value="1">⭐ Terrible</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">Comment</label>
+                            <textarea name="comment" rows="4" placeholder="Share your thoughts about this car..." required 
+                                      style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            📤 Submit Review
+                        </button>
+                    </form>
+                    {% else %}
+                    <div style="margin-top: 20px; padding: 15px; background: #f0f0f0; border-left: 4px solid #667eea; border-radius: 4px;">
+                        <p style="margin: 0; color: #666;">
+                            <a href="{{ url_for('login') }}" style="color: #667eea; text-decoration: none; font-weight: 600;">Login</a> to add your review
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="col-lg-5">
+                <!-- Price & Buy Section -->
+                <div class="buy-section" style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); margin-bottom: 20px; position: sticky; top: 20px;">
+                    <!-- Price -->
+                    <div style="margin-bottom: 20px; text-align: center;">
+                        <p style="margin: 0; color: #999; font-size: 0.9rem; font-weight: 500;">ASKING PRICE</p>
+                        <h2 style="margin: 10px 0 0 0; font-weight: 700; color: #667eea; font-size: 2.2rem;">
+                            ₹{{ "{:,}".format(car.price|int) }}
+                        </h2>
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 0.85rem;">Posted on {{ car.created_on[:10] }}</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                        <form method="POST" action="{{ url_for('add_to_cart', pid=car.id) }}" style="display: contents;">
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 0; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+                                🛒 Add to Cart
+                            </button>
+                        </form>
+                        <a href="#" class="btn" style="background: white; color: #667eea; padding: 12px 0; border: 2px solid #667eea; border-radius: 8px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.3s ease;"
+                           onmouseover="this.style.background='#667eea'; this.style.color='white'"
+                           onmouseout="this.style.background='white'; this.style.color='#667eea'">
+                            {% if is_fav %}
+                            💔 Remove Fav
+                            {% else %}
+                            ❤️ Save Fav
+                            {% endif %}
+                        </a>
+                    </div>
+
+                    <!-- Seller Info Card -->
+                    <div style="background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h5 style="font-weight: 700; margin-bottom: 15px; color: #333;">👤 Seller Information</h5>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                                {{ car.seller[0] if car.seller else '?' }}
+                            </div>
+                            <div>
+                                <p style="margin: 0; font-weight: 600; color: #333;">{{ car.seller or 'Unknown Seller' }}</p>
+                                <p style="margin: 0; color: #999; font-size: 0.9rem;">✓ Verified Seller</p>
+                            </div>
+                        </div>
+
+                        <div style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                            <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                                📧 <strong>{{ car.email or 'seller@example.com' }}</strong>
+                            </p>
+                        </div>
+
+                        <button class="btn" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 0; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            💬 Contact Seller
+                        </button>
+                    </div>
+
+                    <!-- Location Section -->
+                    <div style="background: #f8f8f8; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h5 style="font-weight: 700; margin-bottom: 15px; color: #333;">📍 Location</h5>
+                        <div style="background: white; height: 200px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; border: 2px solid #e0e0e0;">
+                            <p style="color: #999;">🗺️ Map View</p>
+                        </div>
+                        <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                            <strong>City, State</strong> - Posted by {{ car.seller or 'Seller' }}
+                        </p>
+                    </div>
+
+                    <!-- Safety Tips -->
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px; padding: 15px;">
+                        <p style="margin: 0; color: #856404; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px;">⚠️ Safety Tips</p>
+                        <ul style="margin: 0; padding-left: 18px; color: #856404; font-size: 0.85rem;">
+                            <li>Meet in safe public place</li>
+                            <li>Check all documents</li>
+                            <li>Test drive the vehicle</li>
+                            <li>Use secure payment method</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Cars Section -->
+        {% if similar_cars %}
+        <div style="margin-top: 40px;">
+            <h4 style="font-weight: 700; margin-bottom: 20px;">🚗 Similar Cars You Might Like</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                {% for similar in similar_cars %}
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease;"
+                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.15)'" 
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+                    
+                    <img src="{{ url_for('uploaded_file', filename=similar.image_path.split('/')[-1]) }}" alt="{{ similar.title }}" 
+                         style="width: 100%; height: 150px; object-fit: cover;">
+                    
+                    <div style="padding: 15px;">
+                        <h5 style="margin: 0 0 8px 0; font-weight: 600; color: #333;">{{ similar.title }}</h5>
+                        <p style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #667eea;">₹{{ "{:,}".format(similar.price|int) }}</p>
+                        <a href="{{ url_for('car_detail', pid=similar.id) }}" class="btn" style="display: inline-block; margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; border: none; cursor: pointer;">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .car-detail-page {
+        padding-bottom: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .col-lg-5 {
+            max-width: 100%;
+        }
+
+        .col-lg-7 {
+            max-width: 100%;
+        }
+
+        .buy-section {
+            position: relative !important;
+            top: 0 !important;
+        }
+
+        .specs-section {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

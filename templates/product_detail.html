@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Product Image -->
+    <div class="col-md-6 mb-4">
+      <div class="card shadow-lg border-0">
+        {% if product.image_path %}
+          <img src="/{{ product.image_path }}" class="card-img-top" style="height:400px; object-fit:cover;">
+        {% else %}
+          <div class="placeholder-img" style="height:400px;">No Image</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+      <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3 class="text-white mb-0">{{ product.title }}</h3>
+        </div>
+        <div class="card-body">
+          
+          <p class="text-muted mb-2">
+            <strong>📂 Category:</strong> {{ product.category }}
+          </p>
+          
+          <h4 class="text-success mb-3" style="font-size: 2em;">
+            💰 ₹{{ "%.2f"|format(product.price) }}
+          </h4>
+          
+          <p class="mb-3">
+            <strong>📝 Description:</strong><br>
+            {{ product.description }}
+          </p>
+          
+          <div class="card bg-light mb-3">
+            <div class="card-body">
+              <p class="mb-2">
+                <strong>👤 Seller:</strong> {{ product.seller | default('Admin') }}
+              </p>
+              <p class="mb-0">
+                <strong>📧 Contact:</strong> {{ product.seller_email | default('N/A') }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2 mb-3">
+            <form method="POST" action="{{ url_for('add_to_cart', pid=product.id) }}" style="display:inline;">
+              <button type="submit" class="btn btn-success btn-lg fw-bold w-100">
+                🛒 Add to Cart
+              </button>
+            </form>
+          </div>
+
+          {% if session.get('user_id') %}
+            <form method="post" action="{{ url_for('favorite', pid=product.id) }}" style="display:inline;">
+              {% if is_fav %}
+                <input type="hidden" name="action" value="remove">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                  💔 Remove from Favorites
+                </button>
+              {% else %}
+                <input type="hidden" name="action" value="add">
+                <button type="submit" class="btn btn-outline-primary btn-sm w-100">
+                  ❤️ Save to Favorites
+                </button>
+              {% endif %}
+            </form>
+          {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm w-100">
+              🔐 Login to Favorite
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h5 class="text-white mb-0">⭐ Reviews & Ratings</h5>
+        </div>
+        <div class="card-body">
+          {% if reviews %}
+            {% for r in reviews %}
+              <div class="border-bottom pb-3 mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong>{{ r.reviewer }}</strong>
+                    <div class="text-warning mb-1">
+                      {% for i in range(r.rating) %}⭐{% endfor %}
+                    </div>
+                  </div>
+                  <small class="text-muted">{{ r.created_on.split('T')[0] if r.created_on else '' }}</small>
+                </div>
+                <p class="mb-0">{{ r.comment }}</p>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p class="text-muted">No reviews yet. Be the first to review!</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Write Review -->
+      {% if session.get('user_id') %}
+        <div class="card shadow-lg border-0 mt-4">
+          <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h5 class="text-white mb-0">✏️ Leave a Review</h5>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Rating</label>
+                <select name="rating" class="form-select">
+                  <option value="5">⭐⭐⭐⭐⭐ Excellent (5)</option>
+                  <option value="4">⭐⭐⭐⭐ Good (4)</option>
+                  <option value="3">⭐⭐⭐ Average (3)</option>
+                  <option value="2">⭐⭐ Poor (2)</option>
+                  <option value="1">⭐ Terrible (1)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">Comment</label>
+                <textarea class="form-control" name="comment" rows="4" placeholder="Share your experience..."></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">
+                📤 Submit Review
+              </button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="alert alert-info mt-4">
+          <strong>💡 Want to leave a review?</strong> <a href="{{ url_for('login') }}">Login here</a> to share your experience!
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
